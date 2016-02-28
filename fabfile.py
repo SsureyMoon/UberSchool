@@ -76,7 +76,7 @@ def install_packages():
     else:
         with cd(git_dir):
             fabtools.git.checkout('.')
-            run('git fetch origin')
+            # run('git fetch origin')
             if env.git_branch != 'master':
                 run('git checkout {}'.format(env.git_branch))
                 run('git pull origin {}'.format(env.git_branch))
@@ -203,6 +203,20 @@ def stop_supervisor(**kwargs):
         with shell_env(**kwargs):
             fabtools.supervisor.stop_process('django')
 
+def front_end():
+    www = "/home/{user}/www/".format(user=env.project_user)
+    git_dir = www+'uber_school/'
+    front_dir = git_dir+'app_client/'
+    with cd(front_dir):
+        run('npm update')
+        run('grunt compile --force')
+
 @task
-def run(**kwargs):
+def run_server(**kwargs):
     install_packages()
+    update_project()
+    setup_nginx()
+    install_dependencies()
+    migrate(**kwargs)
+    front_end()
+    run_supervisor(**kwargs)
