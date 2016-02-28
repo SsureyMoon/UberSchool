@@ -22,13 +22,13 @@ def run_db_on_mac():
 @task
 def launch():
     env.server_name = 'uber_school'
-    env.hosts = ['52.36.222.205', ]
+    env.hosts = ['54.191.42.133', ]
     env.user = 'ubuntu'
     env.git_branch = 'master'
     env.project_user = 'ubuntu'
     env.db_user = 'ubuntu'
     env.db_password = 'ubuntu'
-    env.key_filename = "/home/ubuntu/mike/etc/{}".format("pison.pem")
+    env.key_filename = "/Users/ssureymoon/Documents/workspace/lauch2016/{}".format("launch2016_key.pem")
 
 
 @task
@@ -76,11 +76,11 @@ def install_packages():
         fabtools.git.clone(git_repo, path=git_dir)
     else:
         with cd(git_dir):
-            fabtools.git.checkout('.')
-            # run('git fetch origin')
+            run('git checkout .')
+            run('git fetch origin')
             if env.git_branch != 'master':
                 run('git checkout {}'.format(env.git_branch))
-                run('git pull origin {}'.format(env.git_branch))
+            run('git pull origin {}'.format(env.git_branch))
 
     front_end = git_dir + 'app_client/'
     if not fabtools.nodejs.version():
