@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+sudo pip install fabric
+sudo apt-get install -y build-essential libssl-dev libffi-dev python-dev
+sudo pip install ecdsa
+sudo pip install fabtools
+sudo pip install pycrypto
+fab launch run_server:UBER_SERVER_TOKEN=

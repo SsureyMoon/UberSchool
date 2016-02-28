@@ -22,13 +22,13 @@ def run_db_on_mac():
 @task
 def launch():
     env.server_name = 'uber_school'
-    env.hosts = ['54.191.42.133', ]
+    env.hosts = ['52.36.222.205', ]
     env.user = 'ubuntu'
     env.git_branch = 'master'
     env.project_user = 'ubuntu'
     env.db_user = 'ubuntu'
     env.db_password = 'ubuntu'
-    env.key_filename = "/Users/ssureymoon/Documents/workspace/lauch2016/{}".format("launch2016_key.pem")
+    env.key_filename = "/home/ubuntu/mike/etc/{}".format("pison.pem")
 
 
 @task
@@ -44,6 +44,7 @@ def setup_postgres():
         if not fabtools.postgres.database_exists(env.server_name):
             fabtools.require.postgres.database(env.server_name, env.db_user)
     sudo('psql -c "CREATE EXTENSION postgis;"', user='postgres')
+    sudo('psql -c "ALTER ROLE ubuntu SUPERUSER;"', user='postgres')
 
 @task
 def install_packages():
@@ -55,9 +56,9 @@ def install_packages():
 
     if not files.exists(www):
         run("mkdir -p " + www)
-    # sudo('apt-get update')
-    # sudo('apt-get upgrade')
-    # sudo('apt-get install build-essential')
+    sudo('apt-get -y update')
+    sudo('apt-get -y upgrade')
+    sudo('apt-get -y install build-essential')
 
 
     fabtools.require.nginx.server()
@@ -80,6 +81,15 @@ def install_packages():
             if env.git_branch != 'master':
                 run('git checkout {}'.format(env.git_branch))
                 run('git pull origin {}'.format(env.git_branch))
+
+    front_end = git_dir + 'app_client/'
+    if not fabtools.nodejs.version():
+        fabtools.nodejs.install_from_source()
+
+    with cd(front_end):
+        run('ls')
+        run('ls node_modules')
+        fabtools.nodejs.install_dependencies()
 
 
 @task
@@ -204,15 +214,19 @@ def stop_supervisor(**kwargs):
     with cd(git_dir), virtualenv(venv):
         with shell_env(**kwargs):
             fabtools.supervisor.stop_process('django')
-
+@task
 def front_end():
     www = "/home/{user}/www/".format(user=env.project_user)
     git_dir = www+'uber_school/'
     front_dir = git_dir+'app_client/'
+    sudo('apt-get -y install ruby-full')
+    sudo('npm install -g grunt-cli')
+    sudo('npm -g install grunt')
+    sudo('gem install sass')
     with cd(front_dir):
         run('npm update')
+        sudo('npm install')
         run('grunt compile --force')
-
 @task
 def run_server(**kwargs):
     install_packages()
