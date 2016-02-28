@@ -1,7 +1,7 @@
 var app = app || {};
 
 app.Models.Authentication = Backbone.Model.extend({
-    url: 'http://oddschool.online/api/v1/token-refresh/',
+    url: 'oddschool.online/api/v1/token-refresh/',
     defaults: {
         token: null,
         expire: null
@@ -46,7 +46,7 @@ app.Models.Authentication = Backbone.Model.extend({
 
         var expire = new Date(new Date().setSeconds(this.get('expire')));
         var cookieOpts = {
-            domain:'local-pm.app.dev',
+            domain:'oddschool.online',
             path: '/',
             expires: expire
         };

@@ -5,7 +5,7 @@ app.Models.Instructor = Backbone.Model.extend({
 
 
 app.Collections.Instructors = Backbone.Collection.extend({
-    url: 'http://oddschool.online/api/v1/instructors/',
+    url: 'oddschool.online/api/v1/instructors/',
     model: app.Models.Instructor,
     origin: 1,
     search: function(query){
@@ -21,7 +21,7 @@ app.Collections.Instructors = Backbone.Collection.extend({
 
 
 app.Models.CreateInstructorModel = Backbone.Model.extend({
-    url: 'http://oddschool.online/api/v1/instructors/',
+    url: 'oddschool.online/api/v1/instructors/',
     validation: {
         location: {
 			required: true

@@ -179,6 +179,8 @@ def run_supervisor(**kwargs):
         # "environment=DJANGO_SETTINGS_MODULE=%(ENV_DJANGO_SETTINGS_MODULE)s,SECRET_KEY=%(ENV_SECRET_KEY)s,DB_USER=%(ENV_DB_USER)s,DB_PASSWORD=%(ENV_DB_PASSWORD)s,AWS_ACCESS_KEY_ID=%(ENV_AWS_ACCESS_KEY_ID)s,AWS_SECRET_ACCESS_KEY=%(ENV_AWS_SECRET_ACCESS_KEY)s " +
         with cd(backend_dir), virtualenv(venv):
             concat = ",".join([key+"=\""+kwargs[key]+"\"" for key in kwargs])
+            print concat
+            print log_dir + 'django_stdout.log'
             #with prefix(concat):
             with shell_env(**kwargs):
                 fabtools.require.supervisor.process('django',
