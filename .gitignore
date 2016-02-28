@@ -49,3 +49,5 @@ backend/backend/media/car_img/*
 backend/backend/media/license_img/*
 !backend/backend/media/car_img/holder.txt
 !backend/backend/media/license_img/holder.txt
+
+.ropeproject
