@@ -26,7 +26,6 @@ app.Views.Login = Backbone.View.extend({
     //     this.unbind();
     // },
     toggleSignup: function(){
-        console.log(this);
         // this.close();
         new app.Views.Signup({model: new app.Models.SignUpModel()});
     },

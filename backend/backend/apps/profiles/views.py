@@ -61,11 +61,14 @@ class UserViewSet(mixins.CreateModelMixin,
         serializer = CreateUserSerializer(data=data)
 
         self.permission_classes = (AllowAny,)
-        serializer.is_valid()
-        for key in serializer.errors:
-            print key
-            for error in serializer.errors[key]:
-                print error
+        is_valid = serializer.is_valid()
+        if not is_valid:
+            for key in serializer.errors:
+                print key
+                for error in serializer.errors[key]:
+                    print error
+            raise Exception(serializer.errors)
+
 
         user = serializer.save()
         data = dict(serializer.data)

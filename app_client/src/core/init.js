@@ -18,6 +18,11 @@ app.Helpers.setTokenHeader = function(){
     return true;
 }
 
+app.Helpers.removeTokenHeader = function(){
+    $.ajaxSetup({headers: {'Authorization': ''}});
+    return true;
+}
+
 app.Helpers.hasCookie = function(name){
     return $.cookie('jwt_token') || false;
 }
@@ -32,12 +37,14 @@ app.Helpers.templateLoader = function(templateName, data){
 }
 
 app.Helpers.errorHandler = function(response){
-    if(response.status == 401){
+    if(response.status >= 500){
+        alert(JSON.stringify(response.responseText))
+    }
+    else if(response.status >= 400){
+        alert(JSON.stringify(response.responseText))
         Backbone.history.navigate('login');
     }
-    if(response.status == 500){
-        alert("Server error!")
-    }
+
 }
 
 /**

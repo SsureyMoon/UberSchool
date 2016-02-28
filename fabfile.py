@@ -214,6 +214,11 @@ def front_end():
         run('grunt compile --force')
 
 @task
+def rerun_server(**kwargs):
+    stop_supervisor(**kwargs)
+    run_supervisor(**kwargs)
+
+@task
 def run_server(**kwargs):
     install_packages()
     update_project()

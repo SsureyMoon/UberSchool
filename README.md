@@ -78,6 +78,15 @@ Compile Sass
 grunt compile
 ```
 
+## Or just use Fabric
+```bash
+# local
+UBER_SERVER_TOKEN=1 ./manage.py runserver
+
+# production
+fab launch run_server:UBER_SERVER_TOKEN="1",SECRET_KEY="<your secret key here>",DJANGO_SETTINGS_MODULE="backend.settings.production"
+```
+
 ## Test application
 http://oddschool.online/
 

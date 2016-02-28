@@ -7,15 +7,6 @@ app.Models.Authentication = Backbone.Model.extend({
         expire: null
     },
     initialize: function() {
-        var token = $.cookie('jwt_token');
-        // already logged in, but wants to extend session
-        if(token){
-            this.set('token', token);
-            this.refreshToken();
-            return true;
-        }
-
-        // after login, we store token to cookie
         if(this.get('token')){
             _.bind(this.saveToken, this)();
             return true;
@@ -59,6 +50,7 @@ app.Models.Authentication = Backbone.Model.extend({
 
     },
     logout: function(){
+        app.Helpers.removeTokenHeader();
         this.removeToken();
     },
     removeToken: function(){
