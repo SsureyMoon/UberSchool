@@ -5,7 +5,7 @@ import dj_database_url
 
 # DATABASES['default'] = dj_database_url.config()
 
-DEBUG = True
+DEBUG = False
 # TEMPLATE_DEBUG = DEBUG
 
 SECRET_KEY = os.environ["SECRET_KEY"]
