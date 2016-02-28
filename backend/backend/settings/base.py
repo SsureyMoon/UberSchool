@@ -180,3 +180,5 @@ LOGGING = {
         }
     },
 }
+
+UBER_SERVER_TOKEN = os.environ['UBER_SERVER_TOKEN']
