@@ -1,7 +1,7 @@
 var app = app || {};
 
 app.Models.SignUpModel = Backbone.Model.extend({
-    url: 'http://local-pm.app.dev/api/v1/users/',
+    url: 'http://oddschool.online/api/v1/users/',
     defaults: {
         username: '',
         email: '',
@@ -31,7 +31,7 @@ app.Models.SignUpModel = Backbone.Model.extend({
 });
 
 app.Models.LoginModel = Backbone.Model.extend({
-    url: 'http://local-pm.app.dev/api/v1/token-auth/',
+    url: 'http://oddschool.online/api/v1/token-auth/',
     defaults: {
         username: '',
         email: '',

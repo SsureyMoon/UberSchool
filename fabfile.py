@@ -26,9 +26,10 @@ def launch():
     env.user = 'ubuntu'
     env.git_branch = 'master'
     env.project_user = 'ubuntu'
-    env.db_user = 'postgres'
-    env.db_password = 'postgres'
+    env.db_user = 'ubuntu'
+    env.db_password = 'ubuntu'
     env.key_filename = "/Users/ssureymoon/Documents/workspace/lauch2016/{}".format("launch2016_key.pem")
+
 
 @task
 def setup_postgres():
@@ -118,14 +119,14 @@ def setup_nginx():
     www = "/home/{user}/www/".format(user=env.project_user)
     config_file = www+'uber_school/nginx/lauch.conf'
     sudo('cp {original} /etc/nginx/sites-available/{target}'\
-        .format(original=config_file, target='ondemanddrivingschool.club'))
+        .format(original=config_file, target='oddschool.online'))
 
     if files.exists('/etc/nginx/sites-enabled/{target}'\
-        .format(target='ondemanddrivingschool.club')):
+        .format(target='oddschool.online')):
         sudo('unlink /etc/nginx/sites-enabled/{target}'\
-            .format(target='ondemanddrivingschool.club'))
+            .format(target='oddschool.online'))
     sudo('ln -s /etc/nginx/sites-available/{target} /etc/nginx/sites-enabled/{target}'\
-        .format(target='ondemanddrivingschool.club'))
+        .format(target='oddschool.online'))
 
     if files.exists('/etc/nginx/sites-enabled/default'):
         sudo('unlink /etc/nginx/sites-enabled/default')
@@ -151,7 +152,7 @@ def migrate(**kwargs):
     git_dir = www+'uber_school/'
     # fabtools.python.install_requirements('{git_dir}requirements/{env}.txt'.format(git_dir=git_dir, env=env.git_branch))
 
-    with cd(git_dir), virtualenv(venv):
+    with cd(git_dir+'backend/'), virtualenv(venv):
         #install_dependencies()
         # DJANGO_SETTINGS_MODULE, SECRET_KEY, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, DB_USER, DB_PASSWORD
         with shell_env(**kwargs):
@@ -160,3 +161,48 @@ def migrate(**kwargs):
             run('python manage.py migrate auth')
             run('python manage.py migrate')
             # run('python manage.py migrate')
+
+@task
+def run_supervisor(**kwargs):
+    www = "/home/{user}/www/".format(user=env.project_user)
+    venv = www+'venv'
+    git_dir = www+'uber_school/'
+    backend_dir = git_dir+'backend/'
+    log_dir = git_dir + 'logs/'
+    python_vbin = venv + '/bin/gunicorn'
+    with settings(user=env.project_user):
+        if not files.exists(log_dir):
+            run('mkdir -p ' + log_dir)
+            run('touch {}django_stdout.log'.format(log_dir))
+            run('touch {}django_stderr.log'.format(log_dir))
+
+        # "environment=DJANGO_SETTINGS_MODULE=%(ENV_DJANGO_SETTINGS_MODULE)s,SECRET_KEY=%(ENV_SECRET_KEY)s,DB_USER=%(ENV_DB_USER)s,DB_PASSWORD=%(ENV_DB_PASSWORD)s,AWS_ACCESS_KEY_ID=%(ENV_AWS_ACCESS_KEY_ID)s,AWS_SECRET_ACCESS_KEY=%(ENV_AWS_SECRET_ACCESS_KEY)s " +
+        with cd(backend_dir), virtualenv(venv):
+            concat = ",".join([key+"=\""+kwargs[key]+"\"" for key in kwargs])
+            #with prefix(concat):
+            with shell_env(**kwargs):
+                fabtools.require.supervisor.process('django',
+                    environment=concat,#"DJANGO_SETTINGS_MODULE=%(ENV_DJANGO_SETTINGS_MODULE)s,SECRET_KEY=%(ENV_SECRET_KEY)s,DB_USER=%(ENV_DB_USER)s,DB_PASSWORD=%(ENV_DB_PASSWORD)s,AWS_ACCESS_KEY_ID=%(ENV_AWS_ACCESS_KEY_ID)s,AWS_SECRET_ACCESS_KEY=%(ENV_AWS_SECRET_ACCESS_KEY)s",
+                    command=python_vbin + ' backend.wsgi:application -w 1 -b 127.0.0.1:8000 -t 300 --max-requests=100',
+                    directory=backend_dir,
+                    user=env.project_user,
+                    stdout_logfile=log_dir + 'django_stdout.log',
+                    stderr_logfile=log_dir + 'django_stderr.log',
+                    autorestart=True,
+                    redirect_stderr=True,
+                )
+
+@task
+def stop_supervisor(**kwargs):
+    www = "/home/{user}/www/".format(user=env.project_user)
+    venv = www+'venv'
+    git_dir = www+'uber_school/'
+    backend_dir = git_dir+'backend/'
+    log_dir = git_dir + 'logs/'
+    with cd(git_dir), virtualenv(venv):
+        with shell_env(**kwargs):
+            fabtools.supervisor.stop_process('django')
+
+@task
+def run(**kwargs):
+    install_packages()

@@ -79,8 +79,7 @@ grunt compile
 ```
 
 ## Test application
-Open browser and access to **your local hostname**
-In this app, we are using **local-pm.app.dev**
+http://oddschool.online/
 
 
 ### This application is currently on development

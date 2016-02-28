@@ -1,7 +1,7 @@
 var app = app || {};
 
 app.Models.Authentication = Backbone.Model.extend({
-    url: 'http://local-pm.app.dev/api/v1/token-refresh/',
+    url: 'http://oddschool.online/api/v1/token-refresh/',
     defaults: {
         token: null,
         expire: null
@@ -64,7 +64,7 @@ app.Models.Authentication = Backbone.Model.extend({
     removeToken: function(){
         this.set('token', null);
         this.set('expire', null);
-        $.removeCookie('jwt_token', {path:'/', domain:'local-pm.app.dev'});
+        $.removeCookie('jwt_token', {path:'/', domain:'oddschool.online'});
         return this;
     }
 
