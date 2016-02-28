@@ -1,7 +1,7 @@
 var app = app || {};
 
 app.Models.Authentication = Backbone.Model.extend({
-    url: 'oddschool.online/api/v1/token-refresh/',
+    url: '/api/v1/token-refresh/',
     defaults: {
         token: null,
         expire: null
