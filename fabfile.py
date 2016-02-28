@@ -114,3 +114,32 @@ def install_dependencies():
 
     with cd(git_dir), virtualenv(venv):
        fabtools.python.install_requirements('{git_dir}backend/requirements.txt'.format(git_dir=git_dir))
+
+@task
+def setup_nginx():
+    www = "/home/{user}/www/".format(user=env.project_user)
+    config_file = www+'uber_school/nginx/launch.conf'
+    sudo('cp {original} /etc/nginx/sites-available/{target}'\
+        .format(original=config_file, target='ondemanddrivingschool.club'))
+
+    if files.exists('/etc/nginx/sites-enabled/{target}'\
+        .format(target='ondemanddrivingschool.club')):
+        sudo('unlink /etc/nginx/sites-enabled/{target}'\
+            .format(target='ondemanddrivingschool.club'))
+    sudo('ln -s /etc/nginx/sites-available/{target} /etc/nginx/sites-enabled/{target}'\
+        .format(target='ondemanddrivingschool.club'))
+
+    if files.exists('/etc/nginx/sites-enabled/default'):
+        sudo('unlink /etc/nginx/sites-enabled/default')
+
+
+    log_dir = '/etc/nginx/log/'
+    if not files.exists(log_dir):
+        sudo('mkdir -p ' + log_dir)
+        sudo('touch {}local-odds.access.log'.format(log_dir))
+        sudo('touch {}local-odds.error.log'.format(log_dir))
+
+    if fabtools.service.is_running('nginx'):
+        fabtools.service.restart('nginx')
+    else:
+        fabtools.service.start('nginx')
