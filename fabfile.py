@@ -101,9 +101,7 @@ def update_project():
         with cd(git_dir):
             fabtools.git.checkout('.')
             run('git fetch origin')
-            if env.git_branch != 'master':
-                run('git checkout {}'.format(env.git_branch))
-                run('git pull origin {}'.format(env.git_branch))
+            run('git pull origin {}'.format(env.git_branch))
 
 
 @task
@@ -118,7 +116,7 @@ def install_dependencies():
 @task
 def setup_nginx():
     www = "/home/{user}/www/".format(user=env.project_user)
-    config_file = www+'uber_school/nginx/launch.conf'
+    config_file = www+'uber_school/nginx/lauch.conf'
     sudo('cp {original} /etc/nginx/sites-available/{target}'\
         .format(original=config_file, target='ondemanddrivingschool.club'))
 
@@ -143,3 +141,22 @@ def setup_nginx():
         fabtools.service.restart('nginx')
     else:
         fabtools.service.start('nginx')
+
+@task
+def migrate(**kwargs):
+    # setup_postgres()
+
+    www = "/home/{user}/www/".format(user=env.project_user)
+    venv = www+'venv'
+    git_dir = www+'uber_school/'
+    # fabtools.python.install_requirements('{git_dir}requirements/{env}.txt'.format(git_dir=git_dir, env=env.git_branch))
+
+    with cd(git_dir), virtualenv(venv):
+        #install_dependencies()
+        # DJANGO_SETTINGS_MODULE, SECRET_KEY, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, DB_USER, DB_PASSWORD
+        with shell_env(**kwargs):
+            #run("pip install ")
+            run('python manage.py makemigrations')
+            run('python manage.py migrate auth')
+            run('python manage.py migrate')
+            # run('python manage.py migrate')
